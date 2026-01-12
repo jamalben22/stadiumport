@@ -162,13 +162,25 @@ export function Header() {
           {/* Right: Actions */}
           <div className="flex items-center gap-4 lg:gap-6">
             
-            {/* Search Trigger */}
+            {/* Search Trigger - Apple/Airbnb Style */}
             <button 
               onClick={() => setIsSearchOpen(true)}
-              className="group p-2 text-slate-500 dark:text-slate-400 hover:text-black dark:hover:text-white transition-all duration-200 hover:scale-110 active:scale-95"
+              className="
+                group relative flex items-center gap-3 px-3 py-2 lg:px-4 lg:py-2.5 
+                rounded-full transition-all duration-300 outline-none
+                bg-white/50 dark:bg-white/5 hover:bg-white/80 dark:hover:bg-white/10 
+                border border-black/5 dark:border-white/10 hover:border-black/10 dark:hover:border-white/20
+                shadow-sm hover:shadow-md backdrop-blur-md
+              "
               aria-label="Search"
             >
-              <Search size={20} strokeWidth={2} className="group-hover:stroke-[2.5px] transition-all" />
+              <Search className="w-4 h-4 text-gray-500 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white transition-colors" />
+              <span className="hidden lg:block text-sm font-medium text-gray-500 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white transition-colors">
+                Search
+              </span>
+              <span className="hidden lg:flex items-center gap-1 ml-1 px-1.5 py-0.5 rounded border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-[10px] font-medium text-gray-400">
+                <span className="text-xs">⌘</span>K
+              </span>
             </button>
 
             {/* Dark Mode Toggle */}
@@ -208,13 +220,6 @@ export function Header() {
               </Link>
             ))}
           </nav>
-
-          <div className="mt-auto pt-8">
-            <div className="flex items-center justify-between mb-8">
-              <span className="text-sm text-slate-500 font-medium">Appearance</span>
-              <DarkModeToggle />
-            </div>
-          </div>
         </div>
       </div>
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Metadata } from 'next';
 import { HeroSection } from '../components/home/HeroSection';
+import { WorldCupCountdown } from '../components/home/WorldCupCountdown';
 import { TournamentOverview } from '../components/home/TournamentOverview';
 import { HostCitiesSection } from '../components/home/HostCitiesSection';
 import { PlanningHub } from '../components/home/PlanningHub';
@@ -95,6 +96,12 @@ export default function HomePage() {
       <JsonLd schema={faqSchema} />
       <JsonLd schema={eventSchema} />
       <HeroSection />
+      
+      {/* Countdown Section between Hero and Overview */}
+      <div className="bg-[#F5F5F7] dark:bg-[#0A0A0A] py-16 flex justify-center">
+        <WorldCupCountdown />
+      </div>
+
       <TournamentOverview />
       <HostCitiesSection />
       <PlanningHub />

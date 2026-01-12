@@ -198,7 +198,7 @@ input[type="reset"],
   --brand-accent: #FBBF24;
   --brand-accent-soft: #fbbf24;
   --footer-bg-light: #EDEDED;
-  --footer-bg-dark: #000000;
+  --footer-bg-dark: #0A0A0A;
 
   /* Semantic Theme Variables - Light Mode (Default) */
   --background: #F5F5F7; /* Apple system gray light */
@@ -225,7 +225,7 @@ input[type="reset"],
 
 .dark {
   /* Semantic Theme Variables - Dark Mode */
-  --background: #000000; /* Apple system black */
+  --background: #0A0A0A; /* Matches reference sections */
   --foreground: #F5F5F7;
   --card: #1C1C1E; /* Apple system gray 6 dark */
   --card-foreground: #F5F5F7;

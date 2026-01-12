@@ -1,82 +1,119 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, X, MapPin, Calendar, Trophy, ArrowRight, ExternalLink, ChevronRight } from 'lucide-react';
+import { Search, X, MapPin, Calendar, Trophy, ArrowRight, ExternalLink, ChevronRight, Clock, Sparkles, FileText, Hash, TrendingUp, AlertCircle, ShoppingBag, Tag, ChevronDown, CornerDownRight } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import Fuse from 'fuse.js';
+import { SEARCH_DATA, SearchResultItem, SearchCategory } from '@/lib/search-data';
 
-interface SearchResult {
-  id: string;
-  type: 'city' | 'stadium' | 'group' | 'page';
-  title: string;
-  description: string;
-  path: string;
-  icon?: any;
-}
+// --- Configuration ---
 
-const SEARCH_DATA: SearchResult[] = [
-  // Pages
-  { id: 'p1', type: 'page', title: 'World Cup Groups', description: 'View all groups, teams, and standings', path: '/world-cup-2026-groups', icon: Trophy },
-  { id: 'p2', type: 'page', title: 'Host Cities', description: 'Explore all 16 host cities', path: '/world-cup-2026-host-cities', icon: MapPin },
-  { id: 'p3', type: 'page', title: 'Stadiums', description: 'Guide to all World Cup venues', path: '/world-cup-2026-stadiums', icon: MapPin },
-  { id: 'p4', type: 'page', title: 'Draw Travel Hub', description: 'Logistics and travel planning', path: '/world-cup-2026-draw-travel-hub', icon: Calendar },
-  { id: 'p5', type: 'page', title: 'Prediction Game', description: 'Predict scores and win prizes', path: '/world-cup-2026-prediction-game', icon: Trophy },
-  
-  // Groups
-  { id: 'g1', type: 'group', title: 'Group A', description: 'Mexico City, Guadalajara, Monterrey', path: '/world-cup-2026-groups/group-a', icon: Trophy },
-  { id: 'g2', type: 'group', title: 'Group B', description: 'Vancouver, Seattle, San Francisco, Los Angeles', path: '/world-cup-2026-groups/group-b', icon: Trophy },
-  { id: 'g3', type: 'group', title: 'Group C', description: 'Boston, New York/NJ, Philadelphia, Toronto', path: '/world-cup-2026-groups/group-c', icon: Trophy },
-  { id: 'g4', type: 'group', title: 'Group D', description: 'Arizona, Houston, Dallas', path: '/world-cup-2026-groups/group-d', icon: Trophy },
-  { id: 'g5', type: 'group', title: 'Group E', description: 'Kansas City, Houston, Dallas', path: '/world-cup-2026-groups/group-e', icon: Trophy },
-  { id: 'g6', type: 'group', title: 'Group F', description: 'Kansas City, Dallas, Houston', path: '/world-cup-2026-groups/group-f', icon: Trophy },
-  { id: 'g7', type: 'group', title: 'Group G', description: 'Los Angeles, Seattle, Vancouver', path: '/world-cup-2026-groups/group-g', icon: Trophy },
-  { id: 'g8', type: 'group', title: 'Group H', description: 'Atlanta, Miami, Houston', path: '/world-cup-2026-groups/group-h', icon: Trophy },
-  { id: 'g9', type: 'group', title: 'Group I', description: 'New York/NJ, Boston, Philadelphia', path: '/world-cup-2026-groups/group-i', icon: Trophy },
-  { id: 'g10', type: 'group', title: 'Group J', description: 'San Francisco, Seattle, Vancouver', path: '/world-cup-2026-groups/group-j', icon: Trophy },
-  { id: 'g11', type: 'group', title: 'Group K', description: 'Houston, Dallas, Kansas City', path: '/world-cup-2026-groups/group-k', icon: Trophy },
-  { id: 'g12', type: 'group', title: 'Group L', description: 'Atlanta, Miami, Toronto', path: '/world-cup-2026-groups/group-l', icon: Trophy },
+const TYPE_PRIORITY: Record<string, number> = {
+  'City': 1,
+  'Stadium': 2,
+  'Product': 3,
+  'Group': 4,
+  'Guide': 5,
+  'Blog': 6,
+  'Page': 7,
+  'Category': 8
+};
 
-  // Cities (Verified Routes)
-  { id: 'c1', type: 'city', title: 'New York / New Jersey', description: 'MetLife Stadium - Final Host', path: '/world-cup-2026-new-york-new-jersey-guide', icon: MapPin },
-  { id: 'c2', type: 'city', title: 'Los Angeles', description: 'SoFi Stadium - US Opener', path: '/world-cup-2026-los-angeles-guide', icon: MapPin },
-  { id: 'c3', type: 'city', title: 'Mexico City', description: 'Estadio Azteca - Opening Match', path: '/world-cup-2026-mexico-city-guide', icon: MapPin },
-  { id: 'c4', type: 'city', title: 'Toronto', description: 'BMO Field - Canada Opener', path: '/world-cup-2026-toronto-guide', icon: MapPin },
-  { id: 'c5', type: 'city', title: 'Vancouver', description: 'BC Place', path: '/world-cup-2026-vancouver-guide', icon: MapPin },
-  { id: 'c6', type: 'city', title: 'Miami', description: 'Hard Rock Stadium', path: '/world-cup-2026-miami-guide', icon: MapPin },
-  { id: 'c7', type: 'city', title: 'Dallas', description: 'AT&T Stadium', path: '/world-cup-2026-dallas-guide', icon: MapPin },
-  { id: 'c8', type: 'city', title: 'Atlanta', description: 'Mercedes-Benz Stadium', path: '/world-cup-2026-atlanta-guide', icon: MapPin },
-  { id: 'c9', type: 'city', title: 'Boston', description: 'Gillette Stadium', path: '/world-cup-2026-boston-guide', icon: MapPin },
-  { id: 'c10', type: 'city', title: 'Guadalajara', description: 'Estadio Akron', path: '/world-cup-2026-guadalajara-guide', icon: MapPin },
-  { id: 'c11', type: 'city', title: 'Houston', description: 'NRG Stadium', path: '/world-cup-2026-houston-guide', icon: MapPin },
-  { id: 'c12', type: 'city', title: 'Kansas City', description: 'Arrowhead Stadium', path: '/world-cup-2026-kansas-city-guide', icon: MapPin },
-  { id: 'c13', type: 'city', title: 'Monterrey', description: 'Estadio BBVA', path: '/world-cup-2026-monterrey-guide', icon: MapPin },
-  { id: 'c14', type: 'city', title: 'Philadelphia', description: 'Lincoln Financial Field', path: '/world-cup-2026-philadelphia-guide', icon: MapPin },
-  { id: 'c15', type: 'city', title: 'San Francisco', description: "Levi's Stadium", path: '/world-cup-2026-san-francisco-bay-area-guide', icon: MapPin },
-  { id: 'c16', type: 'city', title: 'Seattle', description: 'Lumen Field', path: '/world-cup-2026-seattle-guide', icon: MapPin },
+// --- Icons Helper ---
 
-  // Stadiums (Verified Routes)
-  { id: 's1', type: 'stadium', title: 'MetLife Stadium', description: 'New York/New Jersey', path: '/metlife-stadium-world-cup-2026', icon: MapPin },
-  { id: 's2', type: 'stadium', title: 'SoFi Stadium', description: 'Los Angeles', path: '/sofi-stadium-world-cup-2026', icon: MapPin },
-  { id: 's3', type: 'stadium', title: 'Estadio Azteca', description: 'Mexico City', path: '/estadio-azteca-world-cup-2026', icon: MapPin },
-  { id: 's4', type: 'stadium', title: 'BMO Field', description: 'Toronto', path: '/bmo-field-world-cup-2026', icon: MapPin },
-  { id: 's5', type: 'stadium', title: 'BC Place', description: 'Vancouver', path: '/bc-place-world-cup-2026', icon: MapPin },
-  { id: 's6', type: 'stadium', title: 'Hard Rock Stadium', description: 'Miami', path: '/hard-rock-stadium-world-cup-2026', icon: MapPin },
-  { id: 's7', type: 'stadium', title: 'AT&T Stadium', description: 'Dallas', path: '/att-stadium-world-cup-2026', icon: MapPin },
-  { id: 's8', type: 'stadium', title: 'Mercedes-Benz Stadium', description: 'Atlanta', path: '/mercedes-benz-stadium-world-cup-2026', icon: MapPin },
-  { id: 's9', type: 'stadium', title: 'Gillette Stadium', description: 'Boston', path: '/gillette-stadium-world-cup-2026', icon: MapPin },
-  { id: 's10', type: 'stadium', title: 'Estadio Akron', description: 'Guadalajara', path: '/estadio-akron-world-cup-2026', icon: MapPin },
-  { id: 's11', type: 'stadium', title: 'NRG Stadium', description: 'Houston', path: '/nrg-stadium-world-cup-2026', icon: MapPin },
-  { id: 's12', type: 'stadium', title: 'Arrowhead Stadium', description: 'Kansas City', path: '/arrowhead-stadium-world-cup-2026', icon: MapPin },
-  { id: 's13', type: 'stadium', title: 'Estadio BBVA', description: 'Monterrey', path: '/estadio-bbva-world-cup-2026', icon: MapPin },
-  { id: 's14', type: 'stadium', title: 'Lincoln Financial Field', description: 'Philadelphia', path: '/lincoln-financial-field-world-cup-2026', icon: MapPin },
-  { id: 's15', type: 'stadium', title: "Levi's Stadium", description: 'San Francisco', path: '/levis-stadium-world-cup-2026', icon: MapPin },
-  { id: 's16', type: 'stadium', title: 'Lumen Field', description: 'Seattle', path: '/lumen-field-world-cup-2026', icon: MapPin },
+const getIconForType = (type: SearchCategory) => {
+  switch (type) {
+    case 'City': return MapPin;
+    case 'Stadium': return Trophy;
+    case 'Group': return Hash;
+    case 'Guide': return FileText;
+    case 'Page': return Sparkles;
+    case 'Product': return ShoppingBag;
+    case 'Category': return Tag;
+    default: return Search;
+  }
+};
 
-  // Features
-  { id: 'f1', type: 'page', title: 'Predictor Game', description: 'Predict match results', path: '/world-cup-2026-prediction-game', icon: Trophy },
-  { id: 'f2', type: 'page', title: 'Draw Hub', description: 'Travel guide based on draw', path: '/world-cup-2026-draw-travel-hub', icon: MapPin },
-];
+const getColorForType = (type: SearchCategory) => {
+  switch (type) {
+    case 'City': return 'bg-blue-500/10 text-blue-600 dark:text-blue-400';
+    case 'Stadium': return 'bg-purple-500/10 text-purple-600 dark:text-purple-400';
+    case 'Group': return 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400';
+    case 'Guide': return 'bg-orange-500/10 text-orange-600 dark:text-orange-400';
+    case 'Page': return 'bg-slate-500/10 text-slate-600 dark:text-slate-400';
+    case 'Product': return 'bg-pink-500/10 text-pink-600 dark:text-pink-400';
+    default: return 'bg-slate-100 text-slate-500';
+  }
+};
+
+// --- Highlight Helper ---
+
+const HighlightedText = ({ text, matches, field }: { text: string, matches?: readonly any[], field: string }) => {
+  if (!matches) return <span className="truncate">{text}</span>;
+  const match = matches.find((m: any) => m.key === field);
+  if (!match || !match.indices) return <span className="truncate">{text}</span>;
+
+  const indices = match.indices;
+  let lastIndex = 0;
+  const parts = [];
+
+  indices.forEach(([start, end]: [number, number], i: number) => {
+    if (start > lastIndex) {
+      parts.push(<span key={`text-${i}`}>{text.substring(lastIndex, start)}</span>);
+    }
+    parts.push(
+      <span key={`match-${i}`} className="font-bold text-black dark:text-white bg-yellow-200/50 dark:bg-yellow-500/30 rounded-[1px] px-0.5">
+        {text.substring(start, end + 1)}
+      </span>
+    );
+    lastIndex = end + 1;
+  });
+
+  if (lastIndex < text.length) {
+    parts.push(<span key="text-end">{text.substring(lastIndex)}</span>);
+  }
+
+  return <span className="truncate">{parts}</span>;
+};
+
+// --- Image Component ---
+
+const ImageWithFallback = ({ 
+  src, 
+  alt, 
+  type, 
+  className 
+}: { 
+  src?: string, 
+  alt: string, 
+  type: SearchCategory, 
+  className?: string 
+}) => {
+  const [error, setError] = useState(false);
+  const Icon = getIconForType(type);
+  const colorClass = getColorForType(type);
+
+  if (!src || error) {
+    return (
+      <div className={`w-full h-full flex items-center justify-center ${colorClass} ${className}`}>
+        <Icon className="w-6 h-6" />
+      </div>
+    );
+  }
+
+  return (
+    <img 
+      src={src} 
+      alt={alt} 
+      className={className} 
+      onError={() => setError(true)}
+    />
+  );
+};
+
+// --- Component ---
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -85,69 +122,132 @@ interface SearchModalProps {
 
 export function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<SearchResult[]>([]);
+  const [results, setResults] = useState<Fuse.FuseResult<SearchResultItem>[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const handleSelect = useCallback(
-    (result: SearchResult) => {
-      onClose();
-      router.push(result.path);
-    },
-    [onClose, router],
-  );
 
-  // Reset when opening
+  // Initialize Fuse instance
+  const fuse = useMemo(() => new Fuse(SEARCH_DATA, {
+    keys: [
+      { name: 'title', weight: 0.8 }, // Title is most important
+      { name: 'keywords', weight: 0.6 },
+      { name: 'type', weight: 0.4 },
+      { name: 'description', weight: 0.3 }
+    ],
+    threshold: 0.3,
+    distance: 100,
+    includeMatches: true,
+    minMatchCharLength: 2,
+    shouldSort: true,
+    ignoreLocation: true // Find matches anywhere in the string
+  }), []);
+
+  // Load recent searches
+  useEffect(() => {
+    const saved = localStorage.getItem('stadiumport_recent_searches');
+    if (saved) {
+      try {
+        setRecentSearches(JSON.parse(saved).slice(0, 5));
+      } catch (e) {
+        console.error('Failed to parse recent searches', e);
+      }
+    }
+  }, []);
+
+  const saveRecentSearch = (term: string) => {
+    if (!term.trim()) return;
+    const newRecent = [term, ...recentSearches.filter(s => s !== term)].slice(0, 5);
+    setRecentSearches(newRecent);
+    localStorage.setItem('stadiumport_recent_searches', JSON.stringify(newRecent));
+  };
+
+  // Search Logic (Grouped & Sorted)
+  useEffect(() => {
+    if (!query.trim()) {
+      setResults([]);
+      setSelectedIndex(0);
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      const fuseResults = fuse.search(query);
+      
+      // Sort results by Type Priority, then by Score (relevance)
+      // Fuse score is 0 (perfect) to 1 (mismatch), so lower is better.
+      // We want to group by type, but within groups keep relevance.
+      const sortedResults = [...fuseResults].sort((a, b) => {
+        const typeA = TYPE_PRIORITY[a.item.type] || 99;
+        const typeB = TYPE_PRIORITY[b.item.type] || 99;
+        
+        if (typeA !== typeB) {
+          return typeA - typeB;
+        }
+        return (a.score || 0) - (b.score || 0);
+      });
+
+      setResults(sortedResults.slice(0, 50)); // Show more results to populate groups
+      setSelectedIndex(0);
+    }, 50);
+
+    return () => clearTimeout(timeoutId);
+  }, [query, fuse]);
+
+  // Focus Input on Open
   useEffect(() => {
     if (isOpen) {
       setQuery('');
       setResults([]);
       setSelectedIndex(0);
-      // Small delay to allow animation to start before focusing
       setTimeout(() => inputRef.current?.focus(), 50);
     }
   }, [isOpen]);
 
-  // Search Logic
-  useEffect(() => {
-    if (!query) {
-      setResults([]);
-      return;
-    }
+  const handleSelect = useCallback((item: SearchResultItem) => {
+    saveRecentSearch(item.title);
+    onClose();
+    router.push(item.path);
+  }, [onClose, router, recentSearches]);
 
-    const filtered = SEARCH_DATA.filter(item => 
-      item.title.toLowerCase().includes(query.toLowerCase()) || 
-      item.description.toLowerCase().includes(query.toLowerCase())
-    ).slice(0, 5);
-
-    setResults(filtered);
-    setSelectedIndex(0);
-  }, [query]);
-
-  // Keyboard Navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isOpen) return;
-
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        setSelectedIndex(prev => (prev + 1) % (results.length || 1));
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        setSelectedIndex(prev => (prev - 1 + (results.length || 1)) % (results.length || 1));
-      } else if (e.key === 'Enter') {
-        e.preventDefault();
-        if (results[selectedIndex]) {
-          handleSelect(results[selectedIndex]);
-        }
-      } else if (e.key === 'Escape') {
-        onClose();
+  const handleKeyDown = useCallback((e: React.KeyboardEvent | KeyboardEvent) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSelectedIndex(prev => (prev + 1) % (results.length > 0 ? results.length : 1));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedIndex(prev => (prev - 1 + (results.length > 0 ? results.length : 1)) % (results.length > 0 ? results.length : 1));
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (results.length > 0 && results[selectedIndex]) {
+        handleSelect(results[selectedIndex].item);
+      } else if (query.trim()) {
+        // Fallback to first result if available
+        if (results.length > 0) handleSelect(results[0].item);
       }
-    };
+    } else if (e.key === 'Escape') {
+      onClose();
+    }
+  }, [results, selectedIndex, handleSelect, onClose, query]);
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleSelect, isOpen, onClose, results, selectedIndex]);
+  useEffect(() => {
+    if (isOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [isOpen, handleKeyDown]);
+
+  // Ensure selected item is in view
+  useEffect(() => {
+    if (listRef.current && results.length > 0) {
+      // We need to find the element with data-index={selectedIndex}
+      const selectedElement = listRef.current.querySelector(`[data-index="${selectedIndex}"]`);
+      if (selectedElement) {
+        selectedElement.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    }
+  }, [selectedIndex, results]);
 
   return (
     <AnimatePresence>
@@ -158,122 +258,197 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/40 backdrop-blur-[20px] z-[100]"
+            transition={{ duration: 0.15 }}
+            className="fixed inset-0 bg-white/60 dark:bg-black/60 backdrop-blur-md z-[100]"
             onClick={onClose}
-            role="button"
-            aria-label="Close search"
-            tabIndex={-1}
           />
 
-          {/* Modal */}
+          {/* Modal Container */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.98, y: -20 }}
+            initial={{ opacity: 0, scale: 0.98, y: -10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.98, y: -20 }}
-            transition={{ 
-              duration: 0.4, 
-              ease: [0.22, 1, 0.36, 1] // Apple-style ease
-            }}
-            className="fixed top-4 left-4 right-4 bottom-auto md:top-[15%] md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-[90%] md:max-w-2xl bg-[#F5F5F7]/95 dark:bg-[#1a1a1a]/95 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-[12px] shadow-2xl z-[101] overflow-hidden flex flex-col"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Search"
+            exit={{ opacity: 0, scale: 0.98, y: -10 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="fixed top-2 left-0 right-0 mx-auto w-full max-w-2xl z-[101] px-4 sm:top-12"
           >
-            {/* Search Input */}
-            <div className="relative border-b border-black/5 dark:border-white/10">
-              <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" strokeWidth={2.5} />
-              <input
-                ref={inputRef}
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search groups, cities, or guides..."
-                className="w-full h-[60px] bg-transparent pl-14 pr-5 text-[18px] text-slate-900 dark:text-white placeholder:text-slate-400/80 focus:outline-none caret-emerald-500 font-normal"
-                autoComplete="off"
-              />
-            </div>
+            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-800 flex flex-col max-h-[80vh] sm:max-h-[85vh]">
+              
+              {/* Search Header */}
+              <div className="p-4 border-b border-gray-100 dark:border-gray-800 flex items-center gap-3 bg-white dark:bg-gray-900 z-10">
+                <Search className="w-5 h-5 text-gray-400" />
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search cities, gear, guides..."
+                  className="flex-1 bg-transparent text-lg text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none"
+                  autoComplete="off"
+                  autoCorrect="off"
+                  spellCheck="false"
+                />
+                {query && (
+                  <button onClick={() => { setQuery(''); inputRef.current?.focus(); }} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-gray-400">
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+                <div className="hidden sm:flex items-center gap-2 text-xs text-gray-400 font-medium px-2">
+                  <span className="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded border border-gray-200 dark:border-gray-700">ESC</span>
+                </div>
+              </div>
 
-            {/* Results Area */}
-            <div className="max-h-[60vh] overflow-y-auto">
-              {results.length > 0 ? (
-                <div className="py-2">
-                  {results.map((result, index) => (
-                    <motion.button
-                      key={result.id}
-                      onClick={() => handleSelect(result)}
-                      onMouseEnter={() => setSelectedIndex(index)}
-                      className={`w-full px-4 py-3 flex items-center gap-4 text-left transition-colors ${
-                        index === selectedIndex 
-                          ? 'bg-emerald-500 text-slate-900 dark:text-white' 
-                          : 'text-slate-900 dark:text-white hover:bg-black/5 dark:hover:bg-white/5'
-                      }`}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <div className={`p-2 rounded-lg ${
-                        index === selectedIndex 
-                          ? 'bg-white/20 text-slate-900 dark:text-white' 
-                          : 'bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-400'
-                      }`}>
-                        {result.icon ? <result.icon className="w-5 h-5" /> : <Search className="w-5 h-5" />}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className={`text-base font-medium ${
-                          index === selectedIndex ? 'text-slate-900 dark:text-white' : 'text-slate-900 dark:text-white'
-                        }`}>
-                          {result.title}
-                        </div>
-                        <div className={`text-sm truncate ${
-                          index === selectedIndex ? 'text-white/80' : 'text-slate-500 dark:text-slate-400'
-                        }`}>
-                          {result.description}
+              {/* Results Area */}
+              <div className="overflow-y-auto custom-scrollbar bg-[#F9FAFB] dark:bg-[#000000]" ref={listRef}>
+                {query.trim() === '' ? (
+                  // Empty State - Recent & Popular
+                  <div className="p-4 space-y-8">
+                    {recentSearches.length > 0 && (
+                      <div>
+                        <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-2">Recent Searches</h3>
+                        <div className="space-y-1">
+                          {recentSearches.map((term, i) => (
+                            <button
+                              key={i}
+                              onClick={() => { setQuery(term); inputRef.current?.focus(); }}
+                              className="flex items-center gap-3 w-full p-2.5 hover:bg-white dark:hover:bg-gray-800 rounded-xl group transition-all text-left border border-transparent hover:border-gray-100 dark:hover:border-gray-700 hover:shadow-sm"
+                            >
+                              <Clock className="w-4 h-4 text-gray-400 group-hover:text-blue-500" />
+                              <span className="text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white font-medium">{term}</span>
+                            </button>
+                          ))}
                         </div>
                       </div>
-                      {index === selectedIndex && (
-                        <motion.div
-                          layoutId="enter-icon"
-                          className="text-white/80"
-                        >
-                          <span className="text-xs font-medium">Press Enter</span>
-                        </motion.div>
-                      )}
-                    </motion.button>
-                  ))}
-                </div>
-              ) : query ? (
-                <div className="py-12 text-center text-slate-500 dark:text-slate-400">
-                  <p>No results found for "{query}"</p>
-                </div>
-              ) : (
-                <div className="p-4">
-                  <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 px-2">Quick Links</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                     <QuickLink 
-                       title="Prediction Game" 
-                       path="/world-cup-2026-prediction-game" 
-                       icon={Trophy} 
-                       onClick={() => handleSelect({ id: 'ql1', type: 'page', title: 'Prediction Game', description: '', path: '/world-cup-2026-prediction-game' })} 
-                     />
-                     <QuickLink 
-                       title="Host Cities" 
-                       path="/world-cup-2026-host-cities" 
-                       icon={MapPin} 
-                       onClick={() => handleSelect({ id: 'ql2', type: 'page', title: 'Host Cities', description: '', path: '/world-cup-2026-host-cities' })} 
-                     />
+                    )}
+                    
+                    <div>
+                      <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-2">Popular Suggestions</h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {[
+                          { term: 'New York', desc: 'Host City' },
+                          { term: 'Match Tickets', desc: 'Official Sales' },
+                          { term: 'Group A', desc: 'Standings & Fixtures' },
+                          { term: 'Travel Insurance', desc: 'Safety Guide' },
+                          { term: 'Azteca Stadium', desc: 'Mexico City' },
+                          { term: 'Packing List', desc: 'Essentials' }
+                        ].map((item) => (
+                          <button
+                            key={item.term}
+                            onClick={() => { setQuery(item.term); inputRef.current?.focus(); }}
+                            className="flex items-start gap-3 p-3 hover:bg-white dark:hover:bg-gray-800 rounded-xl transition-all text-left border border-transparent hover:border-gray-100 dark:hover:border-gray-700 hover:shadow-sm group"
+                          >
+                            <TrendingUp className="w-4 h-4 text-gray-400 mt-0.5 group-hover:text-blue-500" />
+                            <div>
+                              <span className="block text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">{item.term}</span>
+                              <span className="text-xs text-gray-400">{item.desc}</span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   </div>
+                ) : results.length > 0 ? (
+                  // Search Results
+                  <div className="py-2">
+                    {results.map((result, index) => {
+                      const item = result.item;
+                      const Icon = getIconForType(item.type);
+                      const isSelected = index === selectedIndex;
+                      
+                      // Check if this item starts a new group
+                      const prevItem = index > 0 ? results[index - 1].item : null;
+                      const isNewGroup = !prevItem || prevItem.type !== item.type;
+
+                      return (
+                        <div key={item.id}>
+                          {/* Group Header */}
+                          {isNewGroup && (
+                            <div className="px-4 py-2 mt-2 mb-1 text-xs font-bold text-gray-400 uppercase tracking-wider sticky top-0 bg-[#F9FAFB]/95 dark:bg-black/95 backdrop-blur-sm z-10 border-b border-gray-100 dark:border-gray-800/50">
+                              {item.type === 'Product' ? 'Products & Gear' : 
+                               item.type === 'City' ? 'Host Cities' : 
+                               item.type + 's'}
+                            </div>
+                          )}
+
+                          {/* Result Item */}
+                          <div
+                            data-index={index}
+                            onClick={() => handleSelect(item)}
+                            onMouseEnter={() => setSelectedIndex(index)}
+                            className={`
+                              mx-2 px-3 py-3 cursor-pointer flex items-start gap-4 transition-all relative rounded-xl
+                              ${isSelected 
+                                ? 'bg-white dark:bg-gray-800 shadow-sm scale-[1.01]' 
+                                : 'hover:bg-white/50 dark:hover:bg-gray-800/30 text-gray-600 dark:text-gray-400'}
+                            `}
+                          >
+                            {/* Icon/Image */}
+                          <div className="flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden">
+                            <ImageWithFallback 
+                              src={item.image} 
+                              alt={item.title} 
+                              type={item.type}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+
+                            {/* Content */}
+                            <div className="flex-1 min-w-0 flex flex-col justify-center h-12">
+                              <div className="flex items-center justify-between">
+                                <h4 className={`text-sm font-semibold truncate ${isSelected ? 'text-blue-600 dark:text-blue-400' : 'text-gray-900 dark:text-gray-100'}`}>
+                                  <HighlightedText text={item.title} matches={result.matches} field="title" />
+                                </h4>
+                                {isSelected && <CornerDownRight className="w-3 h-3 text-blue-400" />}
+                              </div>
+                              <p className="text-xs text-gray-500 dark:text-gray-500 line-clamp-1 mt-0.5">
+                                <HighlightedText text={item.description} matches={result.matches} field="description" />
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  // No Results
+                  <div className="p-12 text-center">
+                    <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Search className="w-8 h-8 text-gray-300" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                      No matches for "{query}"
+                    </h3>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm mb-8">
+                      Try searching for a city, team, or category instead.
+                    </p>
+                    
+                    <div className="border-t border-gray-100 dark:border-gray-800 pt-8">
+                      <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4">Explore Categories</h4>
+                      <div className="flex flex-wrap justify-center gap-2">
+                        {['Host Cities', 'Stadiums', 'Tickets', 'Safety', 'Travel', 'Groups'].map((tag) => (
+                          <button 
+                            key={tag}
+                            onClick={() => { setQuery(tag); inputRef.current?.focus(); }}
+                            className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 rounded-full text-sm font-medium transition-colors shadow-sm"
+                          >
+                            {tag}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {/* Footer */}
+              <div className="p-3 bg-gray-50 dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center text-[10px] text-gray-400">
+                <div className="flex gap-4">
+                  <span className="flex items-center gap-1"><kbd className="font-sans bg-white dark:bg-gray-800 px-1.5 py-0.5 rounded border border-gray-200 dark:border-gray-700 shadow-sm">↑↓</kbd> navigate</span>
+                  <span className="flex items-center gap-1"><kbd className="font-sans bg-white dark:bg-gray-800 px-1.5 py-0.5 rounded border border-gray-200 dark:border-gray-700 shadow-sm">↵</kbd> select</span>
                 </div>
-              )}
-            </div>
-            
-            {/* Footer */}
-            <div className="px-4 py-3 bg-slate-50 dark:bg-white/5 border-t border-black/5 dark:border-white/10 flex items-center justify-between text-xs text-slate-400">
-               <div className="flex gap-4">
-                 <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 rounded bg-white dark:bg-black/20 border border-black/10 dark:border-white/10 font-sans">↑↓</kbd> to navigate</span>
-                 <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 rounded bg-white dark:bg-black/20 border border-black/10 dark:border-white/10 font-sans">↵</kbd> to select</span>
-                 <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 rounded bg-white dark:bg-black/20 border border-black/10 dark:border-white/10 font-sans">esc</kbd> to close</span>
-               </div>
+                <div>
+                  <strong>{results.length}</strong> results
+                </div>
+              </div>
             </div>
           </motion.div>
         </>
@@ -281,23 +456,3 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
     </AnimatePresence>
   );
 }
-
-function QuickLink({ title, path, icon: Icon, onClick }: { title: string, path: string, icon: any, onClick: () => void }) {
-  return (
-    <motion.button 
-      onClick={onClick} 
-      className="flex items-center gap-3 p-3 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors text-left group"
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-    >
-      <div className="p-2 bg-white dark:bg-white/10 rounded-md shadow-sm group-hover:scale-110 transition-transform">
-        <Icon className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-      </div>
-      <div>
-        <div className="text-sm font-medium text-slate-900 dark:text-white">{title}</div>
-        <div className="text-xs text-slate-500 dark:text-slate-400">Quick access</div>
-      </div>
-    </motion.button>
-  );
-}
-

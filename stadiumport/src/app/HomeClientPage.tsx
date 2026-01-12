@@ -6,7 +6,6 @@ import { HostCitiesSection } from '@/components/home/HostCitiesSection';
 import { PlanningHub } from '@/components/home/PlanningHub';
 import { TrustSection } from '@/components/home/TrustSection';
 import { CTASection } from '@/components/home/CTASection';
-import { TPUnifiedWidget } from '@/components/widgets/TPUnifiedWidget';
 
 export default function HomeClientPage() {
   return (
@@ -14,11 +13,6 @@ export default function HomeClientPage() {
       <main>
         {/* New Apple/Nike Style Hero Section */}
         <HeroSection />
-
-        {/* Search Widget Section */}
-        <section className="relative -mt-24 z-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-           <TPUnifiedWidget />
-        </section>
 
         {/* Replaced Original City Grid with New HostCitiesSection Component */}
         <HostCitiesSection />

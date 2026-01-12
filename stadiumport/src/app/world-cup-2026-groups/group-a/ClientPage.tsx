@@ -586,7 +586,6 @@ The tournament's spiritual home. From the high-altitude intensity of Estadio Azt
  height={24} 
  alt="Mexico" 
  imgClassName="w-8 h-auto object-cover rounded shadow-sm"
- unoptimized
  />
  Entering Mexico
  </h3>

@@ -121,7 +121,7 @@ const LightboxImage = ({ src, alt, caption }: { src: string, alt: string, captio
  className="relative group cursor-zoom-in rounded-3xl overflow-hidden mb-8"
  onClick={() => setIsOpen(true)}
  >
- <Image src={src} alt={alt} width={1200} height={800} className="object-cover w-full h-[400px] md:h-[600px] transition-transform duration-700 group-hover:scale-105"  unoptimized />
+ <Image src={src} alt={alt} width={1200} height={800} className="object-cover w-full h-[400px] md:h-[600px] transition-transform duration-700 group-hover:scale-105" />
  <div className="absolute inset-0 bg-transparent group-hover:bg-black/20 transition-colors duration-300" />
  {caption && (
  <div className="absolute bottom-0 left-0 right-0 p-6">
@@ -148,7 +148,7 @@ const LightboxImage = ({ src, alt, caption }: { src: string, alt: string, captio
  className="relative max-w-7xl w-full max-h-[90vh] rounded-lg overflow-hidden"
  onClick={(e) => e.stopPropagation()}
  >
- <Image src={src} alt={alt} width={1920} height={1080} className="object-contain w-full h-full"  unoptimized />
+ <Image src={src} alt={alt} width={1920} height={1080} className="object-contain w-full h-full" />
  {caption && <p className="text-center text-white/80 mt-4 font-light text-lg">{caption}</p>}
  </motion.div>
  </motion.div>
@@ -205,7 +205,7 @@ const HotelCard = ({ name, rating, price, distance, features, image, link }: { n
  <div className="group rounded-[2rem] overflow-hidden border border-slate-200 dark:border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 dark:hover:border-emerald-500/50 transition-all duration-500 hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)]">
  <div className="flex flex-col md:flex-row h-full">
  <div className="relative w-full md:w-2/5 min-h-[250px] overflow-hidden">
- <Image src={image} alt={name} fill className="object-cover group-hover:scale-110 transition-transform duration-700"  unoptimized />
+ <Image src={image} alt={name} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
  <div className="absolute top-4 left-4 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold text-slate-900 flex items-center gap-1 shadow-lg">
  <Star className="w-3 h-3 text-amber-400 fill-amber-400" /> {rating}
  </div>
@@ -296,8 +296,7 @@ export default function ClientPage() {
             alt="MetLife Stadium" 
             fill 
             className="object-cover"
-            priority sizes="100vw"
-          unoptimized />
+            priority sizes="100vw" />
  <div className="absolute inset-0 bg-gradient-to-b from-slate-200/40 via-slate-200/60 to-[#F5F5F7] dark:from-[#0A0A0A]/40 dark:via-[#0A0A0A]/60 dark:to-[#0A0A0A]" />
  </div>
 

@@ -234,8 +234,7 @@ export default function ClientPage() {
  src={teamData.flagUrl} 
  alt={`${teamInfo.name} Flag`} 
  fill
- imgClassName="object-cover"
- unoptimized // flagcdn
+ imgClassName="object-cover" // flagcdn
  />
  ) : (
  <span className="text-[10px] font-bold text-slate-400">{teamInfo.code}</span>

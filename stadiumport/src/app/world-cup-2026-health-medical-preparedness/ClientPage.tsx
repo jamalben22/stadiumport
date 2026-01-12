@@ -224,8 +224,7 @@ export default function ClientPage() {
             fill 
             className="object-cover object-center"
             priority 
-            sizes="100vw"
-           unoptimized />
+            sizes="100vw" />
           <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0A]/40 via-[#0A0A0A]/60 to-[#F5F5F7] dark:to-[#0A0A0A]" />
         </div>
 
@@ -445,8 +444,7 @@ export default function ClientPage() {
                     src="/images/safety-guide/A_realistic_high-detail_photo_depicting_safe_transportation_in_a_World_Cup_2026-640.webp" 
                     alt="Travel Insurance" 
                     fill 
-                    className="object-cover" 
-                   unoptimized />
+                    className="object-cover" />
                   <div className="absolute inset-0 bg-emerald-900/20" />
                </div>
             </div>

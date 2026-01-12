@@ -978,7 +978,6 @@ export default function GroupHClientPage() {
                         height={24} 
                         alt="USA" 
                         imgClassName="w-8 h-auto object-cover rounded shadow-sm"
-                        unoptimized
                       />
                       Entering USA
                     </h3>
@@ -1006,7 +1005,6 @@ export default function GroupHClientPage() {
                         height={24} 
                         alt="Mexico" 
                         imgClassName="w-8 h-auto object-cover rounded shadow-sm"
-                        unoptimized
                       />
                       Entering Mexico (Guadalajara)
                     </h3>

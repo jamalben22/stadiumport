@@ -270,7 +270,6 @@ export default function GroupIClientPage() {
                                 height={32}
                                 alt={team.name}
                                 imgClassName="w-12 h-auto object-cover"
-                                unoptimized
                               />
                             )}
                           </div>

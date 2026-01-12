@@ -315,7 +315,6 @@ export default function GroupKClientPage() {
                                 alt={`${team.name} flag`}
                                 fill
                                 imgClassName="object-cover"
-                                unoptimized
                               />
                             ) : (
                               <span className="text-[10px] font-bold text-slate-700 dark:text-slate-200 tracking-tighter uppercase">FIFA</span>

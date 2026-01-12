@@ -261,7 +261,6 @@ export default function GroupCClientPage() {
  height={32}
  alt={team.name}
  imgClassName="w-12 h-auto object-cover rounded shadow-sm"
- unoptimized
  />
  <div className="flex-1">
  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{spotlight.headline}</div>
@@ -678,7 +677,6 @@ export default function GroupCClientPage() {
  height={24} 
  alt="USA" 
  imgClassName="w-8 h-auto object-cover rounded shadow-sm"
- unoptimized
  />
  Entering USA
  </h3>

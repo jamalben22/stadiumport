@@ -298,7 +298,6 @@ export default function ClientPage() {
                          alt={`${teamData.name} Flag`} 
                          fill
                          className="object-cover"
-                         unoptimized
                        />
                      ) : (
                        <span className="text-[10px] font-bold text-slate-400">{teamData.code}</span>

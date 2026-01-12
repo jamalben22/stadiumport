@@ -751,7 +751,6 @@ Three titans. Half a continent. From the deafening roar of Kansas City to the te
  height={24} 
  alt="USA" 
  imgClassName="w-8 h-auto object-cover rounded shadow-sm"
- unoptimized
  />
  Entering USA
  </h3>
@@ -830,7 +829,6 @@ Three titans. Half a continent. From the deafening roar of Kansas City to the te
  height={36}
  alt={team.name}
  imgClassName="w-12 h-auto object-cover rounded shadow-sm"
- unoptimized
  />
  <div>
  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{team.fifaCode}</div>

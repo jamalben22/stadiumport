@@ -365,8 +365,7 @@ export default function SafetyGuideClientPage() {
                         src={guide.image} 
                         alt={guide.title}
                         fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-700"
-                        unoptimized 
+                        className="object-cover group-hover:scale-105 transition-transform duration-700" 
                       />
                       <div className="absolute bottom-4 left-4 z-20">
                         <div className="bg-white/90 dark:bg-black/80 p-2 rounded-lg backdrop-blur-sm inline-block">

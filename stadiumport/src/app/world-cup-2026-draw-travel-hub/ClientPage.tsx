@@ -320,7 +320,6 @@ export default function DrawHubClientPage() {
   alt="FIFA World Cup 26 Qualified Teams Wallchart – stadiumport"
   fill
   className="object-contain w-full h-full transition-transform duration-700 group-hover:scale-[1.02]"
-  unoptimized
   />
  </div>
  <div className="absolute inset-0 border-4 border-white/10 rounded-[2rem] pointer-events-none"></div>

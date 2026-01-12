@@ -770,7 +770,6 @@ World Cup 2026 <br />
  height={24} 
  alt="USA" 
  imgClassName="w-8 h-auto object-cover rounded shadow-sm"
- unoptimized
  />
  Entering USA
  </h3>
@@ -794,7 +793,6 @@ World Cup 2026 <br />
  height={24} 
  alt="Canada" 
  imgClassName="w-8 h-auto object-cover rounded shadow-sm"
- unoptimized
  />
  Entering Canada
  </h3>

@@ -6,8 +6,12 @@ import Image from 'next/image';
 import { Breadcrumb } from "@/components/ui/Breadcrumb"
 import { motion } from "framer-motion"
 import { MapPin, Calendar, Users, ArrowRight, Info, CheckCircle2, Trophy, Plane, Hotel, Ticket, Globe, Flag } from 'lucide-react';
+import dynamic from 'next/dynamic';
 
-import { StadiumMap } from '@/components/feature/StadiumMap';
+const StadiumMap = dynamic(() => import('@/components/feature/StadiumMap').then(mod => mod.StadiumMap), {
+  loading: () => <div className="w-full h-[600px] bg-slate-100 dark:bg-slate-900 animate-pulse rounded-3xl" />,
+  ssr: false
+});
 
 // Stadium Data
 const stadiums = [
@@ -566,8 +570,7 @@ export default function ClientPage() {
                     fill 
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     priority={index < 6}
-                    className="object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out"
-                   unoptimized />
+                    className="object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out" />
                   <div className="absolute top-4 right-4 dark:bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold shadow-sm border border-black/5 dark:border-white/10 text-slate-900 dark:text-white">
                     {stadium.flag} {stadium.country}
                   </div>

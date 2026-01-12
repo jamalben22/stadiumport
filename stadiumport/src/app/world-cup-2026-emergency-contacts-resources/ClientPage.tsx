@@ -128,7 +128,7 @@ const LightboxImage = ({ src, alt, caption }: { src: string, alt: string, captio
         className="relative group cursor-zoom-in rounded-3xl overflow-hidden mb-8"
         onClick={() => setIsOpen(true)}
       >
-        <Image src={src} alt={alt} width={1200} height={800} className="object-cover w-full h-[400px] md:h-[600px] transition-transform duration-700 group-hover:scale-105"  unoptimized />
+        <Image src={src} alt={alt} width={1200} height={800} className="object-cover w-full h-[400px] md:h-[600px] transition-transform duration-700 group-hover:scale-105" />
         <div className="absolute inset-0 bg-transparent group-hover:bg-black/20 transition-colors duration-300" />
         {caption && (
           <div className="absolute bottom-0 left-0 right-0 p-6">
@@ -155,7 +155,7 @@ const LightboxImage = ({ src, alt, caption }: { src: string, alt: string, captio
               className="relative max-w-7xl w-full max-h-[90vh] rounded-lg overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
-              <Image src={src} alt={alt} width={1920} height={1080} className="object-contain w-full h-full"  unoptimized />
+              <Image src={src} alt={alt} width={1920} height={1080} className="object-contain w-full h-full" />
               {caption && <p className="text-center text-white/80 mt-4 font-light text-lg">{caption}</p>}
             </motion.div>
           </motion.div>
@@ -286,8 +286,7 @@ export default function ClientPage() {
             alt="Emergency Resources" 
             fill 
             className="object-cover opacity-80"
-            priority sizes="100vw"
-             unoptimized />
+            priority sizes="100vw" />
           <div className="absolute inset-0 bg-black/50" />
         </div>
 

@@ -13,6 +13,7 @@ import { MicrosoftClarity } from "@/components/analytics/MicrosoftClarity";
 import { CookieConsent } from "@/components/privacy/CookieConsent";
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/next';
+import { DeferredStylesheet } from "@/components/ui/DeferredStylesheet";
 
 // Font configurations
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -46,12 +47,7 @@ export default async function RootLayout({
         <meta name="csp-nonce" content={nonce} />
         <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
         <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.5.0/remixicon.min.css" as="style" />
-        <link 
-          rel="stylesheet" 
-          href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.5.0/remixicon.min.css" 
-          media="print" 
-          onLoad={(e) => { e.currentTarget.media = 'all'; }}
-        />
+        <DeferredStylesheet href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.5.0/remixicon.min.css" />
         <noscript>
           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.5.0/remixicon.min.css" />
         </noscript>

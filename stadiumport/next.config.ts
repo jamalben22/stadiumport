@@ -41,13 +41,13 @@ const nextConfig: NextConfig = {
             "frame-ancestors 'self'; " +
             "form-action 'self'; " +
             "upgrade-insecure-requests; " +
-            "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://tpwgts.com https://www.travelpayouts.com https://api.mapbox.com; " +
+            "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://tpwgts.com https://www.travelpayouts.com https://api.mapbox.com https://pagead2.googlesyndication.com https://adservice.google.com https://www.googletagservices.com; " +
             "worker-src 'self' blob:; " +
             "style-src 'self' 'unsafe-inline' https:; " +
             "img-src 'self' blob: data: https:; " +
             "font-src 'self' data: https:; " +
-            "connect-src 'self' https: wss: https://api.mapbox.com https://events.mapbox.com https://www.google-analytics.com; " +
-            "frame-src 'self';"
+            "connect-src 'self' https: wss: https://api.mapbox.com https://events.mapbox.com https://www.google-analytics.com https://pagead2.googlesyndication.com https://adservice.google.com https://googleads.g.doubleclick.net; " +
+            "frame-src 'self' https://googleads.g.doubleclick.net https://tpc.googlesyndication.com;"
         },
         {
           key: 'X-DNS-Prefetch-Control',

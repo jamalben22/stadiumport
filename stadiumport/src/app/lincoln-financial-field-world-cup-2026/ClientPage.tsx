@@ -287,7 +287,7 @@ src="/images/stadiums/lincoln-financial-field-philadelphia-world-cup-2026-1600.w
 alt="Lincoln Financial Field Aerial" 
 fill 
 className="object-cover opacity-60"
- priority
+ priority quality={60}
  sizes="100vw" />
  <div className="absolute inset-0 bg-gradient-to-b from-slate-200/40 via-slate-200/60 to-[#F5F5F7] dark:from-[#0A0A0A]/40 dark:via-[#0A0A0A]/60 dark:to-[#0A0A0A]" />
  </div>

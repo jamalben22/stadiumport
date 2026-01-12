@@ -306,7 +306,7 @@ export default function ClientPage() {
             alt="World Cup 2026 Itinerary Planning" 
             fill 
             className="object-cover object-center"
-            priority 
+            priority quality={60} 
             sizes="100vw" />
           <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0A]/70 via-[#0A0A0A]/80 to-[#F5F5F7] dark:to-[#0A0A0A]" />
         </div>

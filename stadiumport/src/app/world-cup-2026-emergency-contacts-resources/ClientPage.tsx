@@ -286,7 +286,7 @@ export default function ClientPage() {
             alt="Emergency Resources" 
             fill 
             className="object-cover opacity-80"
-            priority sizes="100vw" />
+            priority quality={60} sizes="100vw" />
           <div className="absolute inset-0 bg-black/50" />
         </div>
 

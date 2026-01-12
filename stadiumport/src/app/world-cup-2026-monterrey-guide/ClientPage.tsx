@@ -282,7 +282,7 @@ export default function ClientPage() {
       alt="Monterrey Skyline" 
       fill 
       className="object-cover"
-      priority 
+      priority quality={60} 
       sizes="100vw" 
     />
     <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-[#F5F5F7] dark:to-[#0A0A0A]" />

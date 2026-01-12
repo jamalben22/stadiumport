@@ -44,7 +44,17 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${spaceGrotesk.variable} ${oswald.variable} ${jetbrains.variable}`}>
       <head>
         <meta name="csp-nonce" content={nonce} />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.5.0/remixicon.min.css" />
+        <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+        <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.5.0/remixicon.min.css" as="style" />
+        <link 
+          rel="stylesheet" 
+          href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.5.0/remixicon.min.css" 
+          media="print" 
+          onLoad={(e) => { e.currentTarget.media = 'all'; }}
+        />
+        <noscript>
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.5.0/remixicon.min.css" />
+        </noscript>
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://www.google-analytics.com" />
         <link rel="preconnect" href="https://images.unsplash.com" />
@@ -55,7 +65,7 @@ export default async function RootLayout({
         <Script
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5399794848914855"
           crossOrigin="anonymous"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
           nonce={nonce}
         />
         {/* Google tag (gtag.js) */}

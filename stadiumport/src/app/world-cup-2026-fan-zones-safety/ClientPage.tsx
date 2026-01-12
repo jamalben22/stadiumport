@@ -251,7 +251,7 @@ export default function FanZoneSafetyClientPage() {
             alt="World Cup 2026 Fan Zone Crowd Safety" 
             fill 
             className="object-cover object-center"
-            priority 
+            priority quality={60} 
             sizes="100vw" 
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[#0A0A0A]/40 via-[#0A0A0A]/60 to-[#F5F5F7] dark:to-[#0A0A0A]" />

@@ -288,8 +288,9 @@ export default function ClientPage() {
  alt={`${city.name} - World Cup 2026 Host City`} 
  fill 
  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
- priority={index < 6}
- className="object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out" />
+                    priority={index < 6}
+                    quality={60}
+                    className="object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out" />
  <div className="absolute top-4 right-4 dark:bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold shadow-sm border border-black/5 dark:border-white/10 text-slate-900 dark:text-white">
  {city.flag} {city.country}
  </div>

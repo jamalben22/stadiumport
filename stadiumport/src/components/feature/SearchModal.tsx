@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, MapPin, Calendar, Trophy, ArrowRight, ExternalLink, ChevronRight, Clock, Sparkles, FileText, Hash, TrendingUp, AlertCircle, ShoppingBag, Tag, ChevronDown, CornerDownRight } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import Fuse from 'fuse.js';
+import Fuse, { FuseResult } from 'fuse.js';
 import { SEARCH_DATA, SearchResultItem, SearchCategory } from '@/lib/search-data';
 
 // --- Configuration ---
@@ -122,7 +122,7 @@ interface SearchModalProps {
 
 export function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<Fuse.FuseResult<SearchResultItem>[]>([]);
+  const [results, setResults] = useState<FuseResult<SearchResultItem>[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -224,7 +224,8 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
         handleSelect(results[selectedIndex].item);
       } else if (query.trim()) {
         // Fallback to first result if available
-        if (results.length > 0) handleSelect(results[0].item);
+        const firstResult = results[0];
+        if (firstResult) handleSelect(firstResult.item);
       }
     } else if (e.key === 'Escape') {
       onClose();
@@ -355,7 +356,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                       const isSelected = index === selectedIndex;
                       
                       // Check if this item starts a new group
-                      const prevItem = index > 0 ? results[index - 1].item : null;
+                      const prevItem = index > 0 ? results[index - 1]?.item : null;
                       const isNewGroup = !prevItem || prevItem.type !== item.type;
 
                       return (
